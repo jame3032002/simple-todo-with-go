@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  database:
+    image: mongo:8.0.0-rc9
+    container_name: db.simple-todo
+    restart: always
+    ports:
+      - 27017:27017
+    env_file: .env
+    volumes:
+      - ./database/init-mongo.sh:/docker-entrypoint-initdb.d/init-mongo.sh
+      - ./resources/db:/data/db
+
+  api:
+    container_name: api.simple-todo
+    ports:
+      - 2000:2000
+    build:
+      context: ./
+      dockerfile: dev.Dockerfile
+    env_file: .env
+    environment:
+      - PORT=2000
+    volumes:
+      - ./:/app
+    depends_on:
+      - database
